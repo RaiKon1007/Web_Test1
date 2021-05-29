@@ -1,0 +1,21 @@
+{
+  "name": "web_test1",
+  "version": "1.0.0",
+  "description": "testapp",
+  "main": "index.js",
+  "dependencies": {},
+  "devDependencies": {},
+  "scripts": {
+    "start": "node Aufgabe3_1/script.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RaiKon1007/Web_Test1.git"
+  },
+  "author": "rk",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/RaiKon1007/Web_Test1/issues"
+  },
+  "homepage": "https://github.com/RaiKon1007/Web_Test1#readme"
+}
