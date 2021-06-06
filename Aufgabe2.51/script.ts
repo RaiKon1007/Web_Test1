@@ -21,39 +21,52 @@ namespace Aufgabe2_5 {
 
   let parts2: Outfit;
 
-
-
   async function serverreply(): Promise<void> {
 
     let imgIds: string[] = [parts2.Kopfbedeckungen[0].Image, parts2.Oberteile[0].Image, parts2.Hosen[0].Image, parts2.Schuhe[0].Image];
 
-
+    //Je nachdem ob man ein error oder eine message zurückbekommen möchte, muss man entrprechend auskommentieren 
     let url: string = "https://gis-communication.herokuapp.com";
-    let _selection: string = imgIds[0] + "&" + imgIds[1];    // Für Test von error
-    //let _selection: string = imgIds[0] + "&" + imgIds[1] + "&" + imgIds[2] + "&" + imgIds[3];  // Für Test von message
-    let query: URLSearchParams = new URLSearchParams(<any> _selection);
+    //let selection: string = imgIds[0] + "&" + imgIds[1];    // Für Test von error
+    //let selection: string = imgIds[0] + "&" + imgIds[1] + "&" + imgIds[2] + "&" + imgIds[3];  // Für Test von message 
+    let selection: string = "";    // Initialisierung
+    for (let i: number = 0; i < imgIds.length; i++) {
+      if (sessionStorage.getItem(imgIds[i]) != null) {
+        if (selection != "") {
+          selection = selection + "&";
+        }
+        selection = selection + imgIds[i];
+        }
+    }
+    console.log(selection);
+    let query: URLSearchParams = new URLSearchParams(<any> selection);
     url = url + "?" + query.toString();
     let response: Response = await fetch(url);
     console.log("ServerResponse", response);
-    let s: ServerResponse = await response.json();
-    console.log(s);
+    let answer: ServerResponse = await response.json();
+    console.log(answer);
 
-    let text: HTMLElement = document.createElement("P");
-    if (s.error != null) {
-      text.innerText = s.error;
-      text.id = "error";
-    }
-    else {
-      if (s.message != null) {
-        text.innerText = s.message;
-        text.id = "message";
+    let aktuelleSeite: string = window.location.href;
+    let pos: number = aktuelleSeite.lastIndexOf("/");
+    aktuelleSeite = aktuelleSeite.substring(pos + 1);
+    if (aktuelleSeite == "Index.html") {
+      let text: HTMLElement = document.createElement("P");
+      if (answer.error != null) {
+        text.innerText = answer.error;
+        text.id = "error";
       }
       else {
-        text.innerText = "Keine Nachricht empfangen";
-        text.id = "egal";
+        if (answer.message != null) {
+          text.innerText = answer.message;
+          text.id = "message";
+        }
+        else {
+          text.innerText = "Keine Nachricht empfangen";
+          text.id = "egal";
+        }
       }
-    }
-    document.body.appendChild(text);
+      document.body.appendChild(text);
+      }
   }
 
 
@@ -123,10 +136,10 @@ namespace Aufgabe2_5 {
         div.setAttribute("src", sessionStorage.getItem(_part.Image));
         div.id = "test";
         prevElement.appendChild(div);
-        let _aktuelleSeite: string = window.location.href;
-        let _pos: number = _aktuelleSeite.lastIndexOf("/");
-        _aktuelleSeite = _aktuelleSeite.substring(_pos + 1);
-        switch (_aktuelleSeite) {
+        let aktuelleSeite: string = window.location.href;
+        let pos: number = aktuelleSeite.lastIndexOf("/");
+        aktuelleSeite = aktuelleSeite.substring(pos + 1);
+        switch (aktuelleSeite) {
           case "Index.html":
             showSelection();
             break;
@@ -177,15 +190,15 @@ namespace Aufgabe2_5 {
 
     switch (aktuelleSeite) {
       case "Index.html":
-        let _selection: boolean = false;
+        let selection: boolean = false;
         for (let i: number = 0; i < imgIds.length; i++) {
           console.log(sessionStorage.getItem(imgIds[i]));
           if (sessionStorage.getItem(imgIds[i]) != null) {
-            _selection = true;
+            selection = true;
           }
         }
 
-        if (_selection == true) {
+        if (selection == true) {
           showSelection();
         }
         else {

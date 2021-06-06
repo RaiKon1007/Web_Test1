@@ -4,31 +4,47 @@ var Aufgabe2_5;
     let parts2;
     async function serverreply() {
         let imgIds = [parts2.Kopfbedeckungen[0].Image, parts2.Oberteile[0].Image, parts2.Hosen[0].Image, parts2.Schuhe[0].Image];
+        //Je nachdem ob man ein error oder eine message zurückbekommen möchte, muss man entrprechend auskommentieren 
         let url = "https://gis-communication.herokuapp.com";
-        let _selection = imgIds[0] + "&" + imgIds[1]; // Für Test von error
-        //let _selection: string = imgIds[0] + "&" + imgIds[1] + "&" + imgIds[2] + "&" + imgIds[3];  // Für Test von message
-        let query = new URLSearchParams(_selection);
+        //let selection: string = imgIds[0] + "&" + imgIds[1];    // Für Test von error
+        //let selection: string = imgIds[0] + "&" + imgIds[1] + "&" + imgIds[2] + "&" + imgIds[3];  // Für Test von message 
+        let selection = ""; // Initialisierung
+        for (let i = 0; i < imgIds.length; i++) {
+            if (sessionStorage.getItem(imgIds[i]) != null) {
+                if (selection != "") {
+                    selection = selection + "&";
+                }
+                selection = selection + imgIds[i];
+            }
+        }
+        console.log(selection);
+        let query = new URLSearchParams(selection);
         url = url + "?" + query.toString();
         let response = await fetch(url);
         console.log("ServerResponse", response);
-        let s = await response.json();
-        console.log(s);
-        let text = document.createElement("P");
-        if (s.error != null) {
-            text.innerText = s.error;
-            text.id = "error";
-        }
-        else {
-            if (s.message != null) {
-                text.innerText = s.message;
-                text.id = "message";
+        let answer = await response.json();
+        console.log(answer);
+        let aktuelleSeite = window.location.href;
+        let pos = aktuelleSeite.lastIndexOf("/");
+        aktuelleSeite = aktuelleSeite.substring(pos + 1);
+        if (aktuelleSeite == "Index.html") {
+            let text = document.createElement("P");
+            if (answer.error != null) {
+                text.innerText = answer.error;
+                text.id = "error";
             }
             else {
-                text.innerText = "Keine Nachricht empfangen";
-                text.id = "egal";
+                if (answer.message != null) {
+                    text.innerText = answer.message;
+                    text.id = "message";
+                }
+                else {
+                    text.innerText = "Keine Nachricht empfangen";
+                    text.id = "egal";
+                }
             }
+            document.body.appendChild(text);
         }
-        document.body.appendChild(text);
     }
     async function communicate(_url) {
         let response = await fetch(_url);
@@ -82,10 +98,10 @@ var Aufgabe2_5;
                 div.setAttribute("src", sessionStorage.getItem(_part.Image));
                 div.id = "test";
                 prevElement.appendChild(div);
-                let _aktuelleSeite = window.location.href;
-                let _pos = _aktuelleSeite.lastIndexOf("/");
-                _aktuelleSeite = _aktuelleSeite.substring(_pos + 1);
-                switch (_aktuelleSeite) {
+                let aktuelleSeite = window.location.href;
+                let pos = aktuelleSeite.lastIndexOf("/");
+                aktuelleSeite = aktuelleSeite.substring(pos + 1);
+                switch (aktuelleSeite) {
                     case "Index.html":
                         showSelection();
                         break;
@@ -126,14 +142,14 @@ var Aufgabe2_5;
         aktuelleSeite = aktuelleSeite.substring(pos + 1);
         switch (aktuelleSeite) {
             case "Index.html":
-                let _selection = false;
+                let selection = false;
                 for (let i = 0; i < imgIds.length; i++) {
                     console.log(sessionStorage.getItem(imgIds[i]));
                     if (sessionStorage.getItem(imgIds[i]) != null) {
-                        _selection = true;
+                        selection = true;
                     }
                 }
-                if (_selection == true) {
+                if (selection == true) {
                     showSelection();
                 }
                 else {

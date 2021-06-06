@@ -21,6 +21,15 @@ var P_3_1Server;
         _response.setHeader("Access-Control-Allow-Origin", "*");
         _response.write(_request.url);
         _response.end();
+        servercom(_response);
+    }
+    async function servercom(_response) {
+        let url = "https://localhost:8100";
+        let query = new URLSearchParams(_response);
+        url = url + "?" + query.toString();
+        let response = await fetch(url);
+        let info = await response.text();
+        console.log(info);
     }
 })(P_3_1Server = exports.P_3_1Server || (exports.P_3_1Server = {}));
 //# sourceMappingURL=script.js.map
